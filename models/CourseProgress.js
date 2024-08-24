@@ -17,4 +17,4 @@ const courseProgress = new mongoose.Schema({
 })
 
 // --> Exporting Schema as courseProgress <--
-module.exports = mongoose.model("courseProgress", courseProgress)
+module.exports = mongoose.model("CourseProgress", courseProgress)
