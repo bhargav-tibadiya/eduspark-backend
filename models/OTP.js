@@ -44,6 +44,13 @@ const sendVerifcationEmail = async (email, otp) => {
 
 }
 
+// --> The User will be only register if OTP verification via mail is Done <-- 
+// --> So using pre to do some task before saving the entry to DB  <--
+otpSchema.pre("save", async (next) => {
+  await sendVerifcationEmail(this.email, this.otp);
+  next();
+})
+
 
 // --> Exporting Schema as OTP <--
 module.exports = mongoose.model("OTP", otpSchema)
