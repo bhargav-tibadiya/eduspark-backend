@@ -23,7 +23,9 @@ const mailSender = async (email, title, body) => {
     return (info)
 
   } catch (error) {
+    console.log("Error While Sending Verification Mail. \nCheck mailSender.js File #BE002");
     console.error(error.message);
+    throw error;
   }
 }
 
