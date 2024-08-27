@@ -1,5 +1,6 @@
 // --> Importing All Dependancy <--
 const otpGenerator = require('otp-generator')
+const bcrypt = require('bcrypt')
 
 
 // --> Importing Required Models <--
@@ -75,4 +76,129 @@ exports.sendOTP = async (req, res) => {
     throw error;
 
   }
+}
+
+
+// --> Function for Signup <--
+exports.signUp = async (req, res) => {
+
+  try {
+
+    // Fetch Data From Request Body
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      accountType,
+      contactNumber,
+      otp
+    } = req.body
+
+    // Validate Data
+    const isDataMissing = (!firstName || !lastName || !email || !password || !confirmPassword || !accountType || !contactNumber || !otp)
+
+    if (isDataMissing) {
+      console.log("Password and Confirm Passwords noth Matching \nCheck Auth.js File #BE005");
+      return res.status(403).json({
+        success: false,
+        message: "Please Fill All Fields, Some Data are Missing",
+      })
+    }
+
+    // Match if Both Password Match
+    if (password !== confirmPassword) {
+
+      console.log("Password and Confirm Passwords noth Matching \nCheck Auth.js File #BE006");
+
+      return res.status(400).json({
+        success: false,
+        message: "Password and Confirm Passwords noth Matching",
+      })
+    }
+
+    // Check if User Already Exist
+    const userExist = await User.findOne({ email })
+
+    console.log("User Already Exist Please Login \nCheck Auth.js File #BE007");
+
+    if (userExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User Already Exist Please Login",
+      })
+    }
+
+    // Find most Recent OTP for the User ( using sort we are sorting to most recent otp and selecting top )
+    const recentOtp = await OTP.find({ email }).sort({ createdAT: -1 }).limit(1);
+    console.log("Selected Recent OTP from DB: ", recentOtp);
+
+    // Validate OTP
+    if (recentOtp.length == 0) {
+
+      // OTP not found
+      console.log("OTP not found in DB \nCheck Auth.js File #BE008");
+
+      return res.status(400).json({
+        success: false,
+        message: "OTP Not Found in DB",
+      })
+
+    } else if (otp != recentOtp.otp) {
+
+      // OTP doesnt match
+      console.log("OTP Doesnt Match & Invalid OTP \nCheck Auth.js File #BE009");
+
+      return res.status(400).json({
+        success: false,
+        message: "OTP Doesnt Match",
+      })
+
+    }
+
+    // Hash Password with Bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create Entry in DB
+
+    const profileDetails = await Profile.create({
+      gender: null,
+      dateOfBirth: null,
+      about: null,
+      contactNumber: null
+    })
+
+    // We will insert ObjectID of Profile
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      contactNumber,
+      password: hashedPassword,
+      accountType,
+      additionalDetails: profileDetails._id,
+      iamge: `https://api.dicebar.com/5.x/initials/svg?seed=?${firstName} ${lastName}`
+    })
+
+    // Return Response
+    res.status(200).json({
+      sucess: true,
+      message: "User Registered Successfully ",
+      user: user
+    })
+
+  } catch (error) {
+
+    res.status(500).json({
+      sucess: false,
+      message: "Error While Creating Account",
+    })
+
+    console.log("Error While Creating Account. \nCheck Auth.js File #BE010");
+    console.error(error.message);
+    throw error;
+
+  }
+
 }
