@@ -1,3 +1,6 @@
-Error code Tally: 
+Error code Tally: #BE014
 
-#BE010
+BE = BackEnd 
+010 Error Code For Faster Search in CodeBase
+
+Cookie and token expiration is set to 3H
