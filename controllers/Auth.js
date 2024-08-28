@@ -1,11 +1,16 @@
 // --> Importing All Dependancy <--
 const otpGenerator = require('otp-generator')
 const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken")
 
 
 // --> Importing Required Models <--
 const User = require('../models/User')
 const OTP = require('../models/OTP')
+
+
+// --> Setting Up the Environment Variables <--
+require(('dotenv')).config()
 
 
 // --> Function for Sending OTP <--
@@ -201,4 +206,86 @@ exports.signUp = async (req, res) => {
 
   }
 
+}
+
+// --> Function for Signup <--
+exports.signUp = async (req, res) => {
+  try {
+
+    // Fetch Data from Request Body
+    const { email, password } = req.body
+
+    // Validate the Data
+    const isDataMissing = (!email || !password)
+
+    if (isDataMissing) {
+      console.log("Data is Missing \nCheck Auth.js File #BE012");
+
+      return res.status(403).json({
+        success: false,
+        message: "Please Fill All Fields, Some Data are Missing",
+      })
+    }
+
+    // Check if User Exist or Not
+    const user = await User.findOne({ email }).populate("addotionalDetails");
+
+    if (!user) {
+      console.log("User Not Found \nCheck Auth.js File #BE013");
+
+      return res.status(401).json({
+        success: false,
+        message: "User Not Found. Please SignUp",
+      })
+    }
+
+    // Generate JWT and Store after Matching Password
+    if (await bcrypt.compare(password, user.password)) {
+
+      const payload = {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "3h",
+      })
+
+      user.token = token;
+      user.password = undefined;
+
+
+      // Generate cookie and Send Response
+      const cookieConfig = {
+        expires: new Date(Date.now() + (3 * 24 * 60 * 60 * 1000))
+      }
+      res.cookie("token", token).status(200).json({
+        sucess: true,
+        message: "Login Sucessful",
+        token: token,
+        user: user
+      })
+
+    } else {
+      
+      res.status(401).json({
+        sucess: false,
+        message: "Password is Incorrect",
+      })
+
+      console.log("Password is Incorrect \nCheck Auth.js File #BE014");
+    }
+
+
+  } catch (error) {
+    res.status(500).json({
+      sucess: false,
+      message: "Error While Login",
+    })
+
+    console.log("Error While Login. \nCheck Auth.js File #BE011");
+    console.error(error.message);
+    throw error;
+  }
 }
