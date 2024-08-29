@@ -183,7 +183,7 @@ exports.signUp = async (req, res) => {
       password: hashedPassword,
       accountType,
       additionalDetails: profileDetails._id,
-      iamge: `https://api.dicebar.com/5.x/initials/svg?seed=?${firstName} ${lastName}`
+      iamge: `https://api.dicebear.com/5.x/initials/svg?seed=?${firstName} ${lastName}`
     })
 
     // Return Response
