@@ -59,6 +59,33 @@ exports.auth = async (req, res, next) => {
 }
 
 // isStudent
+exports.isStudent = async (req, res, next) => {
+  try {
+
+    if (req.user.accontType !== "Student") {
+
+      res.status(500).json({
+        sucess: false,
+        message: "This is protected route for students",
+      })
+
+      console.log("This is protected route for students. \nCheck Middlewares/Auth.js File #BE019  ");
+
+    }
+    next();
+  } catch (error) {
+
+    res.status(500).json({
+      sucess: false,
+      message: "User role can't be verfied",
+    })
+
+    console.log("Unable to verify User Role. \nCheck Middlewares/Auth.js File #BE018");
+    console.error(error.message);
+    throw error;
+
+  }
+}
 
 // isInstructor
 
