@@ -245,7 +245,7 @@ exports.signUp = async (req, res) => {
       const payload = {
         id: user._id,
         email: user.email,
-        role: user.role
+        accountType: user.accountType
       }
 
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -268,7 +268,7 @@ exports.signUp = async (req, res) => {
       })
 
     } else {
-      
+
       res.status(401).json({
         sucess: false,
         message: "Password is Incorrect",
@@ -289,3 +289,11 @@ exports.signUp = async (req, res) => {
     throw error;
   }
 }
+
+// TODO Make a change password function
+
+// fetch data from request body
+// get old pass, new pass, confirm new password
+// validation
+// update data
+// send response { Addon Send mail }
