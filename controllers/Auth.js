@@ -245,7 +245,7 @@ exports.signUp = async (req, res) => {
       const payload = {
         id: user._id,
         email: user.email,
-        role: user.role
+        accountType: user.accountType
       }
 
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
