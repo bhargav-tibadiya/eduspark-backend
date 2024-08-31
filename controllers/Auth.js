@@ -228,7 +228,7 @@ exports.signUp = async (req, res) => {
     }
 
     // Check if User Exist or Not
-    const user = await User.findOne({ email }).populate("addotionalDetails");
+    const user = await User.findOne({ email }).populate("additionalDetails");
 
     if (!user) {
       console.log("User Not Found \nCheck Auth.js File #BE013");
