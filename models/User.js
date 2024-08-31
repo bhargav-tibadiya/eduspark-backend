@@ -48,7 +48,13 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "CourseProgress",
     }
-  ]
+  ],
+  resetPasswordToken: {
+    type: String
+  },
+  resetPasswordExpires: {
+    type: Date
+  }
 })
 
 // --> Exporting Schema as User <--
