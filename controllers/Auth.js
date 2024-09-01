@@ -290,10 +290,79 @@ exports.signUp = async (req, res) => {
   }
 }
 
-// TODO Make a change password function
 
-// fetch data from request body
-// get old pass, new pass, confirm new password
-// validation
-// update data
-// send response { Addon Send mail }
+// --> Function for Changing Password <--
+exports.changePassword = async (req, res) => {
+  try {
+
+    // Fetch Data from Request Body
+    const { email, password, newPassword, confirmNewPassword } = req.body
+
+    // Validate the Data
+    const isDataMissing = (!email || !password || !newPassword || !confirmNewPassword)
+
+    if (isDataMissing) {
+      console.log("Data is Missing \nCheck Auth.js File #BE029");
+
+      return res.status(403).json({
+        success: false,
+        message: "Please Fill All Fields, Some Data are Missing",
+      })
+    }
+
+    // Check if User Exist or Not
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      console.log("User Not Found \nCheck Auth.js File #BE030");
+
+      return res.status(401).json({
+        success: false,
+        message: "User Not Found.",
+      })
+    }
+
+    //check if password matches
+    if (await bcrypt.compare(password, user.password)) {
+
+      const newHashedPassword = await bcrypt.hash(newPassword, 10)
+
+      await User.findOneAndUpdate(
+        { email: email },
+        { password: newHashedPassword },
+        { new: true }
+      )
+
+      user.token = token;
+      user.password = undefined;
+
+      res.status(200).json({
+        sucess: true,
+        message: "Login Sucessful"
+      })
+
+    } else {
+
+      res.status(401).json({
+        sucess: false,
+        message: "Password is Incorrect",
+      })
+
+      console.log("Password is Incorrect \nCheck Auth.js File #BE031");
+    }
+
+
+  } catch (error) {
+
+    res.status(500).json({
+      sucess: false,
+      message: "Error While Changing Passsword",
+    })
+
+    console.log("Error While Changing Passsword\nCheck Auth.js File #BE028");
+    console.error(error.message);
+    throw error;
+
+  }
+
+}
