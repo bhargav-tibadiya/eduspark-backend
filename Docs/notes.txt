@@ -1,4 +1,4 @@
-Error code Tally: #BE027
+Error code Tally: #BE031
 
 BE = BackEnd 
 010 Error Code For Faster Search in CodeBase
