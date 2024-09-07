@@ -99,7 +99,7 @@ exports.createCourse = async (req, res) => {
       message: "Error While Creating a Course",
     })
 
-    console.log("Error While Creating a Course. \nCheck Course.js File #BE035");
+    console.log("Error While Creating a Course. \nCheck Course.js File #BE038");
     console.error(error.message);
     throw error;
 
