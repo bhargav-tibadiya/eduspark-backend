@@ -9,7 +9,7 @@ exports.createSection = async (req, res) => {
     const { sectionName, courseId } = req.body
 
     // Validate Data
-    const isDataMissing = (!sectionName || !courseIdk)
+    const isDataMissing = (!sectionName || !courseId)
 
     if (isDataMissing) {
 
@@ -25,7 +25,7 @@ exports.createSection = async (req, res) => {
     const newSection = Section.create({ sectionName })
 
     // update course with Sections Object ID
-    const updatedCourseDetailsk = await Course.findByIdAndUpdate(
+    const updatedCourseDetails = await Course.findByIdAndUpdate(
       courseId,
       {
         $push: {
@@ -39,7 +39,7 @@ exports.createSection = async (req, res) => {
     res.status(200).json({
       sucess: true,
       message: "Section Created SuccessFully",
-      data: updatedCourseDetailsk
+      data: updatedCourseDetails
     })
 
   } catch (error) {
